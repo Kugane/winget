@@ -12,7 +12,7 @@
 ## Installation
 
 
-Download the [latest release]
+Download the [Latest Release](https://github.com/Kugane/winget/releases/latest)
 
 Edit **winget-basic.ps1** to your liking!
 
