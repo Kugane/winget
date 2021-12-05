@@ -2,7 +2,7 @@
 
 # Install New apps
 
-Write-Host -ForegroundColor Cyan "Install new Apps"
+Write-Host -ForegroundColor Cyan "Installing new Apps"
 
 $apps = @(
     @{name = "SteelSeries.GG" },
