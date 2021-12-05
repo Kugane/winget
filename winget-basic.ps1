@@ -1,7 +1,7 @@
 ﻿# Created by Kugane
 
 # Install WinGet
-# Based on4 this gist: https://gist.github.com/crutkas/6c2096eae387e54bd05cde246f23901
+# Based on this gist: https://gist.github.com/crutkas/6c2096eae387e54bd05cde246f23901
 
 $hasPackageManager = Get-AppXPackage -name 'Microsoft.Winget.Source'
 if (!$hasPackageManager -or $hasPackageManager.Version -lt "2021.1201.1249.908") {
