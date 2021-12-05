@@ -1,33 +1,40 @@
 ﻿# Created by Kugane
 
 # Install WinGet
-# Based on4 this gist: https://gist.github.com/crutkas/6c2096eae387e54bd05cde246f23901
+# Based on this gist: https://gist.github.com/crutkas/6c2096eae387e54bd05cde246f23901
 
 $OSVersion = [System.Environment]::OSVersion.Version
 $hasPackageManager = Get-AppXPackage -name 'Microsoft.Winget.Source'
 
-if ($OSVersion -ge "10.0.22000" -and $hasPackageManager.Version -lt "1.1.12986") {
+if ($OSVersion -ge "10.0.22000" -and !$hasPackageManager.Version -lt "2021.1201.1249.908") {
 
     Write-Host -ForegroundColor Yellow "Install WinGet..."
-
-    Get-AppXPackage 'Microsoft.DesktopAppInstaller' -AllUsers | Foreach {Add-AppXPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
-
-    Write-Host -ForegroundColor Green "WinGet successfully installed."
-}
-elseif ($OSVersion -lt "10.0.22000" -and $hasPackageManager.Version -lt "1.1.12986") {
-
-        Write-Host -ForegroundColor Yellow "Install WinGet..."
-
-        Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x86.14.00.Desktop.appx
-        Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
-
-		$releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+    #Get-AppXPackage 'Microsoft.DesktopAppInstaller' -AllUsers | Foreach {Add-AppXPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+    Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x86.14.00.Desktop.appx
+    Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+    
+	    $releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
 		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 		$releases = Invoke-RestMethod -uri "$($releases_url)"
 		$latestRelease = $releases.assets | Where { $_.browser_download_url.EndsWith("msixbundle") } | Select -First 1
 		Add-AppxPackage -Path $latestRelease.browser_download_url
 
-        Write-Host -ForegroundColor Green "WinGet successfully installed."
+    Write-Host -ForegroundColor Green "WinGet successfully installed."
+}
+elseif ($OSVersion -lt "10.0.22000" -and !$hasPackageManager.Version -lt "2021.1201.1249.908") {
+
+    Write-Host -ForegroundColor Yellow "Install WinGet..."
+
+    Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x86.14.00.Desktop.appx
+    Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+
+	    $releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+		$releases = Invoke-RestMethod -uri "$($releases_url)"
+		$latestRelease = $releases.assets | Where { $_.browser_download_url.EndsWith("msixbundle") } | Select -First 1
+		Add-AppxPackage -Path $latestRelease.browser_download_url
+
+    Write-Host -ForegroundColor Green "WinGet successfully installed."
 }
 else {
     Write-Host -ForegroundColor Green "WinGet is already installed. Skip..."
