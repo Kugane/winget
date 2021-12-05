@@ -6,18 +6,23 @@
 $OSVersion = [System.Environment]::OSVersion.Version
 $hasPackageManager = Get-AppXPackage -name 'Microsoft.Winget.Source'
 
-if ($OSVersion -ge "10.0.22000" -and $hasPackageManager.Version -lt "1.1.12986") {
+if ($OSVersion -ge "10.0.22000" -and !$hasPackageManager.Version -lt "2021.1201.1249.908") {
 
     Write-Host -ForegroundColor Yellow "Install WinGet..."
-
-    Get-AppXPackage 'Microsoft.DesktopAppInstaller' -AllUsers | Foreach {Add-AppXPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+    #Get-AppXPackage 'Microsoft.DesktopAppInstaller' -AllUsers | Foreach {Add-AppXPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
+    Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x86.14.00.Desktop.appx
+    Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
 
     Write-Host -ForegroundColor Green "WinGet successfully installed."
 }
-elseif ($OSVersion -lt "10.0.22000" -and $hasPackageManager.Version -lt "1.1.12986") {
+elseif ($OSVersion -lt "10.0.22000" -and !$hasPackageManager.Version -lt "2021.1201.1249.908") {
 
-        Write-Host -ForegroundColor Yellow "Install WinGet..."
+    Write-Host -ForegroundColor Yellow "Install WinGet..."
 
+    Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x86.14.00.Desktop.appx
+    Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
+
+<<<<<<< Updated upstream
         Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x86.14.00.Desktop.appx
         Add-AppxPackage -Path https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx
 
@@ -26,8 +31,15 @@ elseif ($OSVersion -lt "10.0.22000" -and $hasPackageManager.Version -lt "1.1.129
 		$releases = Invoke-RestMethod -uri "$($releases_url)"
 		$latestRelease = $releases.assets | Where { $_.browser_download_url.EndsWith("msixbundle") } | Select -First 1
 		Add-AppxPackage -Path $latestRelease.browser_download_url
+=======
+	$releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+	$releases = Invoke-RestMethod -uri "$($releases_url)"
+	$latestRelease = $releases.assets | Where { $_.browser_download_url.EndsWith("msixbundle") } | Select -First 1
+	Add-AppxPackage -Path $latestRelease.browser_download_url
+>>>>>>> Stashed changes
 
-        Write-Host -ForegroundColor Green "WinGet successfully installed."
+    Write-Host -ForegroundColor Green "WinGet successfully installed."
 }
 else {
     Write-Host -ForegroundColor Green "WinGet is already installed. Skip..."
