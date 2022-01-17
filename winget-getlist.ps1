@@ -31,7 +31,7 @@ if (!$hasPackageManager -or !$hasPackageManager.Version -lt "1.1.12653") {
 	    $releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
 		[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 		$releases = Invoke-RestMethod -uri "$($releases_url)"
-		$latestRelease = $releases.assets | Where { $_.browser_download_url.EndsWith("msixbundle") } | Select -First 1
+		$latestRelease = $releases.assets | Where-Object { $_.browser_download_url.EndsWith("msixbundle") } | Select-Object -First 1
 		Add-AppxPackage -Path $latestRelease.browser_download_url
 
         Write-Host -ForegroundColor Green "WinGet successfully installed."
@@ -41,7 +41,7 @@ else {
     }
 }
 Pause
-cls
+Clear-Host
 
 $DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
 winget list > "$DesktopPath\winget.txt"

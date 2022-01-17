@@ -1,4 +1,4 @@
-# A Winget script to automatically install predefined programs and MS Store apps. Including automatic update and cleanup job
+# A Winget script to automatically install programs and MS Store apps. Debloating Windows Apps. Including automatic update and cleanup job
 #
 ## Features
 
@@ -6,6 +6,7 @@
 - Does not require any additional tools
 - Checks if winget is installed, otherwise the installation starts
 - Drag&Drop script for executing powershell scripts and install packages with winget
+- Debloat of Windows Apps
 - Automatic scheduled updates for installed packages
 - Automatic log cleanup 
 #
