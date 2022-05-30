@@ -1,10 +1,14 @@
 ﻿# Created by Kugane
 
 
-
+### Here can you add apps that you want to configure during installation ###
+# just add the app id from winget
 $graphical = @(
     @{name = "ClamWin.ClamWin" }
 );
+
+### These apps are installed silently for all users ###
+# for msstore apps you need to specify the source like below
 
 $apps = @(
     @{name = "7zip.7zip" }
@@ -137,13 +141,13 @@ $bloatware = @(
 
 
 
-$DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
 ### Install WinGet ###
 # Based on this gist: https://gist.github.com/crutkas/6c2096eae387e544bd05cde246f23901
 $hasPackageManager = Get-AppxPackage -Name 'Microsoft.Winget.Source' | Select Name, Version
 $hasVCLibs = Get-AppxPackage -Name 'Microsoft.VCLibs.140.00.UWPDesktop' | Select Name, Version
 $hasXAML = Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7*' | Select Name, Version
 $hasAppInstaller = Get-AppxPackage -Name 'Microsoft.DesktopAppInstaller' | Select Name, Version
+$DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
 
 Write-Host -ForegroundColor Yellow "Checking if WinGet is installed"
 if (!$hasPackageManager) {
@@ -277,21 +281,21 @@ Pause
 Clear-Host
 
 ### Register Taskjob ###
-$taskname = 'WinGet AutoUpgrade & Cleanup.xml'
+$taskname = 'WinGet AutoUpgrade & Cleanup'
 Write-Host -ForegroundColor Yellow "Checking for Taskjob..."
 if ($(Get-ScheduledTask -TaskName $taskname -ErrorAction SilentlyContinue).TaskName -eq $taskname) {
     Unregister-ScheduledTask -TaskName $taskname -Confirm:$False
     Write-Host -ForegroundColor Yellow "Taskjob already exists. Update to newer version..."
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Invoke-WebRequest -Uri https://github.com/Kugane/winget/raw/main/WinGet%20AutoUpgrade%20%26%20Cleanup.xml -OutFile '$taskjob' 
-    Register-ScheduledTask -xml (Get-Content '$taskjob' | Out-String) -TaskName "WinGet AutoUpgrade & Cleanup.xml"
+    Register-ScheduledTask -xml (Get-Content '$taskjob' | Out-String) -TaskName $taskname
     Write-Host -ForegroundColor Green "Taskjob successfully updated."
 }
 else {
     Write-Host -ForegroundColor Yellow "Installing taskjob..."
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Invoke-WebRequest -Uri https://github.com/Kugane/winget/raw/main/WinGet%20AutoUpgrade%20%26%20Cleanup.xml -OutFile '$taskjob' 
-    Register-ScheduledTask -xml (Get-Content '$taskjob' | Out-String) -TaskName "WinGet AutoUpgrade & Cleanup.xml"
+    Register-ScheduledTask -xml (Get-Content '$taskjob' | Out-String) -TaskName $taskname
     Write-Host -ForegroundColor Green "Taskjob successfully installed."
 }
 Pause
