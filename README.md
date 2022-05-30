@@ -60,9 +60,6 @@ After that the powershell script will run and pause after each section to let yo
 #
 
 #
-## License
-
-GNU General Public License v3.0
 
 
 
