@@ -34,6 +34,7 @@ $bloatware = @(
 
     # default Windows 10 apps
     "Microsoft.549981C3F5F10"        # Cortana Offline
+    "Microsoft.OneDriveSync"         # Onedrive
     "Microsoft.3DBuilder"
     "Microsoft.BingFinance"
     "Microsoft.BingNews"
@@ -51,7 +52,7 @@ $bloatware = @(
     "Microsoft.People"
     "Microsoft.Print3D"    
     "Microsoft.WindowsAlarms"
-    "microsoft.windowscommunicationsapps"
+    # "microsoft.windowscommunicationsapps"        # Mail and Calender     
     "Microsoft.WindowsMaps"
     "Microsoft.SkypeApp"
     "Microsoft.Wallet"
@@ -136,10 +137,6 @@ $bloatware = @(
 #############################################################################################
 ################################ Don't change anything below ################################
 #############################################################################################
-
-### Question what to do ###
-
-
 
 ### Install WinGet ###
 # Based on this gist: https://gist.github.com/crutkas/6c2096eae387e544bd05cde246f23901
