@@ -138,6 +138,59 @@ $bloatware = @(
 ################################ Don't change anything below ################################
 #############################################################################################
 
+### Question what to do ###
+#function questions() {
+    
+    $actions = "0"
+    Write-Host "What you want to do?"
+    Write-Host "Install Apps with graphical installer only = 1"
+    Write-Host "Install Apps silent only = 2"
+    Write-Host "Just Debloat = 3"
+    Write-Host "Install Job = 4"
+    Write-Host "Do all = 5"
+    Write-Host "Get List = 6"
+    Write-Host "EXIT = 7"
+    
+    while ($actions -notin "1..7") {
+    $actions = Read-Host -Prompt 'Give input'
+        if ($actions -in 1..7) {
+            if ($actions -eq 1) {
+                install_winget
+                install_gui
+            }
+            if ($actions -eq 2) {
+                install_winget
+                install_silent
+            }
+            if ($actions -eq 3) {
+                debloating
+            }
+            if ($actions -eq 4) {
+                taskjob
+            }
+            if ($actions -eq 5) {
+                install_winget
+                install_gui
+                install_silent
+                debloating
+                taskjob
+            }
+            if ($actions -eq 6) {
+                install_winget
+                get_list
+            }
+            if ($actions -eq 7) {
+                exit
+            }
+        }
+        else {
+            Write-Host "geht nicht"
+            exit;
+        }
+    }
+#}
+
+
 ### Install WinGet ###
 # Based on this gist: https://gist.github.com/crutkas/6c2096eae387e544bd05cde246f23901
 $hasPackageManager = Get-AppxPackage -Name 'Microsoft.Winget.Source' | Select Name, Version
@@ -146,159 +199,181 @@ $hasXAML = Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7*' | Select Name, Version
 $hasAppInstaller = Get-AppxPackage -Name 'Microsoft.DesktopAppInstaller' | Select Name, Version
 $DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
 
-Write-Host -ForegroundColor Yellow "Checking if WinGet is installed"
-if (!$hasPackageManager) {
-        if ($hasVCLibs.Version -lt "14.0.30035.0") {
-            Write-Host -ForegroundColor Yellow "Installing VCLibs dependencies..."
-            Add-AppxPackage -Path "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
-            Write-Host -ForegroundColor Green "VCLibs dependencies successfully installed."
-        }
-        else {
-            Write-Host -ForegroundColor Green "VCLibs is already installed. Skip..."
-        }
-        if ($hasXAML.Version -lt "7.2203.17001.0") {
-            Write-Host -ForegroundColor Yellow "Installing XAML dependencies..."
-            Add-AppxPackage -Path "https://github.com/Kugane/winget/raw/main/Microsoft.UI.Xaml.2.7_7.2203.17001.0_x64__8wekyb3d8bbwe.Appx"
-            Write-Host -ForegroundColor Green "XAML dependencies successfully installed."
-        }
-        else {
-            Write-Host -ForegroundColor Green "XAML is already installed. Skip..."
-        }
-        if ($hasAppInstaller.Version -lt "1.16.12653.0") {
-            Write-Host -ForegroundColor Yellow "Installing WinGet..."
-	        $releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-		    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-		    $releases = Invoke-RestMethod -Uri "$($releases_url)"
-		    $latestRelease = $releases.assets | Where-Object { $_.browser_download_url.EndsWith("msixbundle") } | Select-Object -First 1
-		    Add-AppxPackage -Path $latestRelease.browser_download_url
-            Write-Host -ForegroundColor Green "WinGet successfully installed."
-        }
-}
-else {
-    Write-Host -ForegroundColor Green "WinGet is already installed. Skip..."
+function install_winget {
+
+    Write-Host -ForegroundColor Yellow "Checking if WinGet is installed"
+    if (!$hasPackageManager) {
+            if ($hasVCLibs.Version -lt "14.0.30035.0") {
+                Write-Host -ForegroundColor Yellow "Installing VCLibs dependencies..."
+                Add-AppxPackage -Path "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+                Write-Host -ForegroundColor Green "VCLibs dependencies successfully installed."
+            }
+            else {
+                Write-Host -ForegroundColor Green "VCLibs is already installed. Skip..."
+            }
+            if ($hasXAML.Version -lt "7.2203.17001.0") {
+                Write-Host -ForegroundColor Yellow "Installing XAML dependencies..."
+                Add-AppxPackage -Path "https://github.com/Kugane/winget/raw/main/Microsoft.UI.Xaml.2.7_7.2203.17001.0_x64__8wekyb3d8bbwe.Appx"
+                Write-Host -ForegroundColor Green "XAML dependencies successfully installed."
+            }
+            else {
+                Write-Host -ForegroundColor Green "XAML is already installed. Skip..."
+            }
+            if ($hasAppInstaller.Version -lt "1.16.12653.0") {
+                Write-Host -ForegroundColor Yellow "Installing WinGet..."
+    	        $releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
+    		    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    		    $releases = Invoke-RestMethod -Uri "$($releases_url)"
+    		    $latestRelease = $releases.assets | Where-Object { $_.browser_download_url.EndsWith("msixbundle") } | Select-Object -First 1
+    		    Add-AppxPackage -Path $latestRelease.browser_download_url
+                Write-Host -ForegroundColor Green "WinGet successfully installed."
+            }
     }
-Pause
-Clear-Host
+    else {
+        Write-Host -ForegroundColor Green "WinGet is already installed. Skip..."
+        }
+    Pause
+    Clear-Host
+}
 
 ### Install Apps with GUI ###
 # Based on this gist: https://gist.github.com/Codebytes/29bf18015f6e93fca9421df73c6e512c
-Write-Host -ForegroundColor Cyan "Installing new Apps wit GUI"
-Foreach ($gui in $graphical) {
-    $listGUI = winget list --exact -q $gui.name
-    if (![String]::Join("", $listGUI).Contains($gui.name)) {
-        Write-Host -ForegroundColor Yellow "Install:" $gui.name
-        if ($gui.source -ne $null) {
-            winget install --exact --interactive --accept-package-agreements --accept-source-agreements $gui.name --source $gui.source
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host -ForegroundColor Green $gui.name "successfully installed."
+
+function install_gui {
+    Write-Host -ForegroundColor Cyan "Installing new Apps wit GUI"
+    Foreach ($gui in $graphical) {
+        $listGUI = winget list --exact -q $gui.name
+        if (![String]::Join("", $listGUI).Contains($gui.name)) {
+            Write-Host -ForegroundColor Yellow "Install:" $gui.name
+            if ($gui.source -ne $null) {
+                winget install --exact --interactive --accept-package-agreements --accept-source-agreements $gui.name --source $gui.source
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host -ForegroundColor Green $gui.name "successfully installed."
+                }
+                else {
+                    $gui.name + " couldn't be installed." | Add-Content "$DesktopPath\winget_install.log"
+                    Write-Host
+                    Write-Host -ForegroundColor Red $gui.name "couldn't be installed."
+                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\winget_intall.log"
+                    Write-Host
+                    Pause
+                }
             }
             else {
-                $gui.name + " couldn't be installed." | Add-Content "$DesktopPath\winget_install.log"
-                Write-Host
-                Write-Host -ForegroundColor Red $gui.name "couldn't be installed."
-                Write-Host -ForegroundColor Yellow "Write in $DesktopPath\winget_intall.log"
-                Write-Host
-                Pause
+                winget install --exact --interactive --accept-package-agreements --accept-source-agreements $gui.name
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host -ForegroundColor Green $gui.name "successfully installed."
+                }
+                else {
+                    $gui.name + " couldn't be installed." | Add-Content "$DesktopPath\winget_install.log"
+                    Write-Host
+                    Write-Host -ForegroundColor Red $gui.name "couldn't be installed."
+                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\winget_intall.log"
+                    Write-Host
+                    Pause
+                }            
             }
         }
         else {
-            winget install --exact --interactive --accept-package-agreements --accept-source-agreements $gui.name
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host -ForegroundColor Green $gui.name "successfully installed."
-            }
-            else {
-                $gui.name + " couldn't be installed." | Add-Content "$DesktopPath\winget_install.log"
-                Write-Host
-                Write-Host -ForegroundColor Red $gui.name "couldn't be installed."
-                Write-Host -ForegroundColor Yellow "Write in $DesktopPath\winget_intall.log"
-                Write-Host
-                Pause
-            }            
+            Write-Host -ForegroundColor Yellow "Skip installation of" $gui.name
         }
     }
-    else {
-        Write-Host -ForegroundColor Yellow "Skip installation of" $gui.name
-    }
+    Pause
+    Clear-Host
 }
-Pause
-Clear-Host
 
 ### Install Apps silent ###
-Write-Host -ForegroundColor Cyan "Installing new Apps"
-Foreach ($app in $apps) {
-    $listApp = winget list --exact -q $app.name
-    if (![String]::Join("", $listApp).Contains($app.name)) {
-        Write-Host -ForegroundColor Yellow  "Install:" $app.name
-        # MS Store apps
-        if ($app.source -ne $null) {
-            winget install --exact --silent --accept-package-agreements --accept-source-agreements $app.name --source $app.source
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host -ForegroundColor Green $app.name "successfully installed."
+function install_silent {
+    Write-Host -ForegroundColor Cyan "Installing new Apps"
+    Foreach ($app in $apps) {
+        $listApp = winget list --exact -q $app.name
+        if (![String]::Join("", $listApp).Contains($app.name)) {
+            Write-Host -ForegroundColor Yellow  "Install:" $app.name
+            # MS Store apps
+            if ($app.source -ne $null) {
+                winget install --exact --silent --accept-package-agreements --accept-source-agreements $app.name --source $app.source
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host -ForegroundColor Green $app.name "successfully installed."
+                }
+                else {
+                    $app.name + " couldn't be installed." | Add-Content "$DesktopPath\winget_install.log"
+                    Write-Host
+                    Write-Host -ForegroundColor Red $app.name "couldn't be installed."
+                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\winget_intall.log"
+                    Write-Host
+                    Pause
+                }    
             }
+            # All other Apps
             else {
-                $app.name + " couldn't be installed." | Add-Content "$DesktopPath\winget_install.log"
-                Write-Host
-                Write-Host -ForegroundColor Red $app.name "couldn't be installed."
-                Write-Host -ForegroundColor Yellow "Write in $DesktopPath\winget_intall.log"
-                Write-Host
-                Pause
-            }    
+                winget install --exact --silent --scope machine --accept-package-agreements --accept-source-agreements $app.name
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host -ForegroundColor Green $app.name "successfully installed."
+                }
+                else {
+                    $app.name + " couldn't be installed." | Add-Content "$DesktopPath\winget_install.log"
+                    Write-Host
+                    Write-Host -ForegroundColor Red $app.name "couldn't be installed."
+                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\winget_intall.log"
+                    Write-Host
+                    Pause
+                }  
+            }
         }
-        # All other Apps
         else {
-            winget install --exact --silent --scope machine --accept-package-agreements --accept-source-agreements $app.name
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host -ForegroundColor Green $app.name "successfully installed."
-            }
-            else {
-                $app.name + " couldn't be installed." | Add-Content "$DesktopPath\winget_install.log"
-                Write-Host
-                Write-Host -ForegroundColor Red $app.name "couldn't be installed."
-                Write-Host -ForegroundColor Yellow "Write in $DesktopPath\winget_intall.log"
-                Write-Host
-                Pause
-            }  
+            Write-Host -ForegroundColor Yellow "Skip installation of" $app.name
         }
     }
-    else {
-        Write-Host -ForegroundColor Yellow "Skip installation of" $app.name
-    }
+    Pause
+    Clear-Host
 }
-Pause
-Clear-Host
 
 ### Debloating ###
 # Based on this gist: https://github.com/W4RH4WK/Debloat-Windows-10/blob/master/scripts/remove-default-apps.ps1
-Write-Host -ForegroundColor Cyan "Remove bloatware"
-Foreach ($blt in $bloatware) {
-    Write-Host -ForegroundColor Red "Removing:" $blt
-    Get-AppxPackage -AllUsers $blt | Remove-AppxPackage
+function debloating {
+    Write-Host -ForegroundColor Cyan "Remove bloatware"
+    Foreach ($blt in $bloatware) {
+        Write-Host -ForegroundColor Red "Removing:" $blt
+        Get-AppxPackage -AllUsers $blt | Remove-AppxPackage
+    }
+    Pause
+    Clear-Host
 }
-Pause
-Clear-Host
 
 ### Register Taskjob ###
-$taskname = 'WinGet AutoUpgrade & Cleanup'
-Write-Host -ForegroundColor Yellow "Checking for Taskjob..."
-if ($(Get-ScheduledTask -TaskName $taskname -ErrorAction SilentlyContinue).TaskName -eq $taskname) {
-    Unregister-ScheduledTask -TaskName $taskname -Confirm:$False
-    Write-Host -ForegroundColor Yellow "Taskjob already exists. Update to newer version..."
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest -Uri https://github.com/Kugane/winget/raw/main/WinGet%20AutoUpgrade%20%26%20Cleanup.xml -OutFile '$taskjob' 
-    Register-ScheduledTask -xml (Get-Content '$taskjob' | Out-String) -TaskName $taskname
-    Write-Host -ForegroundColor Green "Taskjob successfully updated."
+function taskjob {
+    $taskname = 'WinGet AutoUpgrade & Cleanup'
+    Write-Host -ForegroundColor Yellow "Checking for Taskjob..."
+    if ($(Get-ScheduledTask -TaskName $taskname -ErrorAction SilentlyContinue).TaskName -eq $taskname) {
+        Unregister-ScheduledTask -TaskName $taskname -Confirm:$False
+        Write-Host -ForegroundColor Yellow "Taskjob already exists. Update to newer version..."
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -Uri https://github.com/Kugane/winget/raw/main/WinGet%20AutoUpgrade%20%26%20Cleanup.xml -OutFile '$taskjob' 
+        Register-ScheduledTask -xml (Get-Content '$taskjob' | Out-String) -TaskName $taskname
+        Write-Host -ForegroundColor Green "Taskjob successfully updated."
+    }
+    else {
+        Write-Host -ForegroundColor Yellow "Installing taskjob..."
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -Uri https://github.com/Kugane/winget/raw/main/WinGet%20AutoUpgrade%20%26%20Cleanup.xml -OutFile '$taskjob' 
+        Register-ScheduledTask -xml (Get-Content '$taskjob' | Out-String) -TaskName $taskname
+        Write-Host -ForegroundColor Green "Taskjob successfully installed."
+    }
+    Pause
+    Clear-Host
 }
-else {
-    Write-Host -ForegroundColor Yellow "Installing taskjob..."
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    Invoke-WebRequest -Uri https://github.com/Kugane/winget/raw/main/WinGet%20AutoUpgrade%20%26%20Cleanup.xml -OutFile '$taskjob' 
-    Register-ScheduledTask -xml (Get-Content '$taskjob' | Out-String) -TaskName $taskname
-    Write-Host -ForegroundColor Green "Taskjob successfully installed."
+
+### Get List of installed Apps ###
+function get_list {
+    $DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
+    Write-Host -ForegroundColor Yellow "Generating Applist..."
+    winget list > "$DesktopPath\$env:computername_winget.txt"
+    Write-Host -ForegroundColor Magenta "List saved on $DesktopPath\$env:computername_winget.txt"
+    Pause
 }
-Pause
-Clear-Host
 
 Write-Host
 Write-Host -ForegroundColor Magenta  "Installation finished"
 Write-Host
 Pause
+
