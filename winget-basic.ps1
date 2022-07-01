@@ -138,59 +138,6 @@ $bloatware = @(
 ################################ Don't change anything below ################################
 #############################################################################################
 
-### Question what to do ###
-#function questions() {
-    
-    $actions = "0"
-    Write-Host "What you want to do?"
-    Write-Host "Install Apps with graphical installer only = 1"
-    Write-Host "Install Apps silent only = 2"
-    Write-Host "Just Debloat = 3"
-    Write-Host "Install Job = 4"
-    Write-Host "Do all = 5"
-    Write-Host "Get List = 6"
-    Write-Host "EXIT = 7"
-    
-    while ($actions -notin "1..7") {
-    $actions = Read-Host -Prompt 'Give input'
-        if ($actions -in 1..7) {
-            if ($actions -eq 1) {
-                install_winget
-                install_gui
-            }
-            if ($actions -eq 2) {
-                install_winget
-                install_silent
-            }
-            if ($actions -eq 3) {
-                debloating
-            }
-            if ($actions -eq 4) {
-                taskjob
-            }
-            if ($actions -eq 5) {
-                install_winget
-                install_gui
-                install_silent
-                debloating
-                taskjob
-            }
-            if ($actions -eq 6) {
-                install_winget
-                get_list
-            }
-            if ($actions -eq 7) {
-                exit
-            }
-        }
-        else {
-            Write-Host "geht nicht"
-            exit;
-        }
-    }
-#}
-
-
 ### Install WinGet ###
 # Based on this gist: https://gist.github.com/crutkas/6c2096eae387e544bd05cde246f23901
 $hasPackageManager = Get-AppxPackage -Name 'Microsoft.Winget.Source' | Select Name, Version
@@ -238,7 +185,6 @@ function install_winget {
 
 ### Install Apps with GUI ###
 # Based on this gist: https://gist.github.com/Codebytes/29bf18015f6e93fca9421df73c6e512c
-
 function install_gui {
     Write-Host -ForegroundColor Cyan "Installing new Apps wit GUI"
     Foreach ($gui in $graphical) {
@@ -366,14 +312,81 @@ function taskjob {
 ### Get List of installed Apps ###
 function get_list {
     $DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
+    $timestamp = get-date -Format dd_MM_yyyy
+    $newPath = "$DesktopPath\" + "winget_"+ $env:computername + "_$timestamp" + ".txt"
     Write-Host -ForegroundColor Yellow "Generating Applist..."
-    winget list > "$DesktopPath\$env:computername_winget.txt"
-    Write-Host -ForegroundColor Magenta "List saved on $DesktopPath\$env:computername_winget.txt"
+    winget list > $newPath
+    Write-Host -ForegroundColor Magenta "List saved on $newPath"
     Pause
 }
 
-Write-Host
-Write-Host -ForegroundColor Magenta  "Installation finished"
-Write-Host
-Pause
+### Finished ###
+function finish {
+    Write-Host
+    Write-Host -ForegroundColor Magenta  "Installation finished"
+    Write-Host
+    Pause
+}
 
+### Question what to do ###
+function menu {
+    [string]$Title = 'Winget Menu'
+    Clear-Host
+    Write-Host "================ $Title ================"
+    Write-Host
+    Write-Host "1: Do all steps below"
+    Write-Host
+    Write-Host "2: Install Apps under "graphical""
+    Write-Host "3: Install Apps under "apps""
+    Write-Host "4: Remove bloatware"
+    Write-Host
+    Write-Host "5: Install Taskjob for automatic updates"
+    Write-Host "6: Get List of all installed Apps"
+    Write-Host
+    Write-Host -ForegroundColor Red "0: Quit"
+    Write-Host
+    
+    $actions = "0"
+    while ($actions -notin "0..6") {
+    $actions = Read-Host -Prompt 'What you want to do?'
+        if ($actions -in 0..6) {
+            if ($actions -eq 1) {
+                install_winget
+                install_gui
+                install_silent
+                debloating
+                taskjob
+                finish
+            }
+            if ($actions -eq 2) {
+                install_winget
+                install_gui
+                finish
+            }
+            if ($actions -eq 3) {
+                install_winget
+                install_silent
+                finish
+            }
+            if ($actions -eq 4) {
+                debloating
+                finish
+            }
+            if ($actions -eq 5) {
+                taskjob
+                finish
+            }
+            if ($actions -eq 6) {
+                install_winget
+                get_list
+            }
+            if ($actions -eq 0) {
+                exit
+            }
+        }
+        else {
+            Write-Host -ForegroundColor Yellow "Please try again"
+        }
+    }
+}
+menu
