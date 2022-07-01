@@ -145,6 +145,8 @@ $hasVCLibs = Get-AppxPackage -Name 'Microsoft.VCLibs.140.00.UWPDesktop' | Select
 $hasXAML = Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7*' | Select Name, Version
 $hasAppInstaller = Get-AppxPackage -Name 'Microsoft.DesktopAppInstaller' | Select Name, Version
 $DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
+$errorlog = winget_error.log
+
 
 function install_winget {
 
@@ -197,10 +199,10 @@ function install_gui {
                     Write-Host -ForegroundColor Green $gui.name "successfully installed."
                 }
                 else {
-                    $gui.name + " couldn't be installed." | Add-Content "$DesktopPath\winget_install.log"
+                    $gui.name + " couldn't be installed." | Add-Content "$DesktopPath\$errorlog"
                     Write-Host
                     Write-Host -ForegroundColor Red $gui.name "couldn't be installed."
-                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\winget_intall.log"
+                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\$errorlog"
                     Write-Host
                     Pause
                 }
@@ -211,10 +213,10 @@ function install_gui {
                     Write-Host -ForegroundColor Green $gui.name "successfully installed."
                 }
                 else {
-                    $gui.name + " couldn't be installed." | Add-Content "$DesktopPath\winget_install.log"
+                    $gui.name + " couldn't be installed." | Add-Content "$DesktopPath\$errorlog"
                     Write-Host
                     Write-Host -ForegroundColor Red $gui.name "couldn't be installed."
-                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\winget_intall.log"
+                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\$errorlog"
                     Write-Host
                     Pause
                 }            
@@ -242,10 +244,10 @@ function install_silent {
                     Write-Host -ForegroundColor Green $app.name "successfully installed."
                 }
                 else {
-                    $app.name + " couldn't be installed." | Add-Content "$DesktopPath\winget_install.log"
+                    $app.name + " couldn't be installed." | Add-Content "$DesktopPath\$errorlog"
                     Write-Host
                     Write-Host -ForegroundColor Red $app.name "couldn't be installed."
-                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\winget_intall.log"
+                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\$errorlog"
                     Write-Host
                     Pause
                 }    
@@ -257,10 +259,10 @@ function install_silent {
                     Write-Host -ForegroundColor Green $app.name "successfully installed."
                 }
                 else {
-                    $app.name + " couldn't be installed." | Add-Content "$DesktopPath\winget_install.log"
+                    $app.name + " couldn't be installed." | Add-Content "$DesktopPath\$errorlog"
                     Write-Host
                     Write-Host -ForegroundColor Red $app.name "couldn't be installed."
-                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\winget_intall.log"
+                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\$errorlog"
                     Write-Host
                     Pause
                 }  
@@ -343,7 +345,7 @@ function menu {
     Write-Host "5: Install Taskjob for automatic updates"
     Write-Host "6: Get List of all installed Apps"
     Write-Host
-    Write-Host -ForegroundColor Red "0: Quit"
+    Write-Host -ForegroundColor Magenta "0: Quit"
     Write-Host
     
     $actions = "0"
