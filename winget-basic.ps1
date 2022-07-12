@@ -23,7 +23,6 @@ $apps = @(
     @{name = "9MVZQVXJBQ9V"; source = "msstore" }        # AV1 VideoExtension
     @{name = "9NCTDW2W1BH8"; source = "msstore" }        # Raw-PictureExtension
     @{name = "9N95Q1ZZPMH4"; source = "msstore" }        # MPEG-2-VideoExtension
-    @{name = "9N4WGH0Z6VHQ"; source = "msstore" }        # HEVC-VideoExtension
 );
 
 $bloatware = @(
@@ -145,11 +144,11 @@ $hasVCLibs = Get-AppxPackage -Name 'Microsoft.VCLibs.140.00.UWPDesktop' | Select
 $hasXAML = Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7*' | Select Name, Version
 $hasAppInstaller = Get-AppxPackage -Name 'Microsoft.DesktopAppInstaller' | Select Name, Version
 $DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
-$errorlog = winget_error.log
+$errorlog = "winget_error.log"
 
 
 function install_winget {
-
+    Clear-Host
     Write-Host -ForegroundColor Yellow "Checking if WinGet is installed"
     if (!$hasPackageManager) {
             if ($hasVCLibs.Version -lt "14.0.30035.0") {
@@ -177,9 +176,13 @@ function install_winget {
     		    Add-AppxPackage -Path $latestRelease.browser_download_url
                 Write-Host -ForegroundColor Green "WinGet successfully installed."
             }
+        # Fix for hangup on first start
+        winget search clamav --accept-source-agreements
     }
     else {
         Write-Host -ForegroundColor Green "WinGet is already installed. Skip..."
+        # Fix for hangup on first start
+        winget search clamav --accept-source-agreements
         }
     Pause
     Clear-Host
@@ -313,7 +316,6 @@ function taskjob {
 
 ### Get List of installed Apps ###
 function get_list {
-    $DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
     $timestamp = get-date -Format dd_MM_yyyy
     $newPath = "$DesktopPath\" + "winget_"+ $env:computername + "_$timestamp" + ".txt"
     Write-Host -ForegroundColor Yellow "Generating Applist..."
@@ -338,20 +340,25 @@ function menu {
     Write-Host
     Write-Host "1: Do all steps below"
     Write-Host
-    Write-Host "2: Install Apps under "graphical""
-    Write-Host "3: Install Apps under "apps""
-    Write-Host "4: Remove bloatware"
+    Write-Host "2: Just install winget"
     Write-Host
-    Write-Host "5: Install Taskjob for automatic updates"
-    Write-Host "6: Get List of all installed Apps"
+    Write-Host "3: Install Apps under graphical"
+    Write-Host "4: Install Apps under apps"
+    Write-Host "5: Remove bloatware"
+    Write-Host
+    Write-Host "6: Install Taskjob for automatic updates"
+    Write-Host "7: Get List of all installed Apps"
     Write-Host
     Write-Host -ForegroundColor Magenta "0: Quit"
     Write-Host
     
     $actions = "0"
-    while ($actions -notin "0..6") {
+    while ($actions -notin "0..7") {
     $actions = Read-Host -Prompt 'What you want to do?'
-        if ($actions -in 0..6) {
+        if ($actions -in 0..7) {
+            if ($actions -eq 0) {
+                exit
+            }
             if ($actions -eq 1) {
                 install_winget
                 install_gui
@@ -362,32 +369,34 @@ function menu {
             }
             if ($actions -eq 2) {
                 install_winget
-                install_gui
                 finish
             }
             if ($actions -eq 3) {
                 install_winget
-                install_silent
+                install_gui
                 finish
             }
             if ($actions -eq 4) {
-                debloating
+                install_winget
+                install_silent
                 finish
             }
             if ($actions -eq 5) {
-                taskjob
+                debloating
                 finish
             }
             if ($actions -eq 6) {
+                taskjob
+                finish
+            }
+            if ($actions -eq 7) {
                 install_winget
                 get_list
             }
-            if ($actions -eq 0) {
-                exit
-            }
+            menu
         }
         else {
-            Write-Host -ForegroundColor Yellow "Please try again"
+            menu
         }
     }
 }
