@@ -1,4 +1,4 @@
-﻿# Created by Kugane
+# Created by Kugane
 
 
 ### Here can you add apps that you want to configure during installation ###
@@ -69,7 +69,7 @@ $bloatware = @(
     "Microsoft.WindowsMaps"
     "Microsoft.WindowsPhone"
     "Microsoft.WindowsSoundRecorder"
-    #"Microsoft.WindowsStore"       # can't be re-installed
+    #"Microsoft.WindowsStore"   # can't be re-installed
     "Microsoft.ZuneVideo"
     "Microsoft.YourPhone"
     #"Microsoft.MSPaint"          # Paint & Paint3D
@@ -153,7 +153,7 @@ $bloatware = @(
 #############################################################################################
 
 ### Install WinGet ###
-# Idea from this gist: https://gist.github.com/crutkas/6c2096eae387e544bd05cde246f23901
+# Based on this gist: https://gist.github.com/crutkas/6c2096eae387e544bd05cde246f23901
 $hasPackageManager = Get-AppxPackage -Name 'Microsoft.Winget.Source' | Select Name, Version
 $hasVCLibs = Get-AppxPackage -Name 'Microsoft.VCLibs.140.00.UWPDesktop' | Select Name, Version
 $hasXAML = Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7*' | Select Name, Version
@@ -192,8 +192,8 @@ function install_winget {
             }
     }
     else {
+        Clear-Host
         Write-Host -ForegroundColor Green "WinGet is already installed. Skip..."
-        Write-Host ""
         }
     Pause
 }
@@ -213,7 +213,7 @@ function install_gui {
             }
             else {
                 "$gui couldn't be installed." | Add-Content $errorlog
-                Write-Warning "$gui couldn't be installed."
+                Write-Host -ForegroundColor Red $gui "couldn't be installed."
                 Write-Host -ForegroundColor Yellow "Write in $errorlog"
                 Pause
             }
@@ -246,7 +246,7 @@ function install_silent {
             }
             else {
                 $app + " couldn't be installed." | Add-Content $errorlog
-                Write-Warning "$app couldn't be installed."
+                Write-Host -ForegroundColor Red $app "couldn't be installed."
                 Write-Host -ForegroundColor Yellow "Write in $errorlog"
                 Pause
             }  
@@ -288,7 +288,7 @@ function taskjob {
             Clear-Host
         }
         else {
-            Write-Warning -ForegroundColor Yellow "Taskjob not updated."
+            Write-Host -ForegroundColor Yellow "Taskjob not updated."
             Pause
             Clear-Host
         }
@@ -323,14 +323,6 @@ function finish {
     Pause
 }
 
-function check_rights {
-    If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
-    {
-        Write-Warning "The script needs to be executed with administrator privileges."
-        Break
-    }
-}
-
 ### Question what to do ###
 function menu {
     [string]$Title = 'Winget Menu'
@@ -350,7 +342,7 @@ function menu {
     Write-Host
     Write-Host -ForegroundColor Magenta "0: Quit"
     Write-Host
- 
+    
     $actions = "0"
     while ($actions -notin "0..7") {
     $actions = Read-Host -Prompt 'What you want to do?'
@@ -399,5 +391,4 @@ function menu {
         }
     }
 }
-check_rights
 menu
