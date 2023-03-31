@@ -13,8 +13,8 @@ $graphical = @(
 $apps = @(
     "7zip.7zip"
     "Foxit.FoxitReader"
-    "Microsoft.VCRedist.2015+.x86"
     "Microsoft.VCRedist.2015+.x64"
+    "Microsoft.VCRedist.2015+.x86"
     "9NCBCSZSJRSB"                      # Spotify
     "9NKSQGP7F2NH"                      # Whatsapp Desktop
     "9WZDNCRFJ3TJ"                      # Netflix
@@ -209,7 +209,7 @@ function install_gui {
             Write-Host -ForegroundColor Yellow "Install:" $gui
             winget install --exact --interactive --accept-source-agreements --accept-package-agreements $gui
             if ($LASTEXITCODE -eq 0) {
-                Write-Host -ForegroundColor Green $gui "successfully installed."
+                Write-Host -ForegroundColor Green "$gui successfully installed."
             }
             else {
                 "$gui couldn't be installed." | Add-Content $errorlog
@@ -219,7 +219,7 @@ function install_gui {
             }
         }
         else {
-            Write-Host -ForegroundColor Yellow "Skip installation of" $gui
+            Write-Host -ForegroundColor Yellow "$gui already installed. Skip..."
         }
     }
     Pause
@@ -242,7 +242,7 @@ function install_silent {
                 winget install --exact --silent --scope machine --accept-source-agreements --accept-package-agreements $app
             }
             if ($LASTEXITCODE -eq 0) {
-                Write-Host -ForegroundColor Green $app "successfully installed."
+                Write-Host -ForegroundColor Green "$app successfully installed."
             }
             else {
                 $app + " couldn't be installed." | Add-Content $errorlog
@@ -252,7 +252,7 @@ function install_silent {
             }  
         }
         else {
-            Write-Host -ForegroundColor Yellow "Skip installation of" $app
+            Write-Host -ForegroundColor Yellow "$app already installed. Skip..."
         }
     }
     Pause
@@ -264,8 +264,13 @@ function debloating {
     Clear-Host
     Write-Host -ForegroundColor Cyan "Removing bloatware..."
     Foreach ($blt in $bloatware) {
-        Write-Host -ForegroundColor Red "Removing:" $blt
-        Get-AppxPackage -AllUsers $blt | Remove-AppxPackage
+        $package = Get-AppxPackage -AllUsers $blt
+        if ($package -ne $null) {
+            Write-Host -ForegroundColor Red "Removing: $blt"
+            $package | Remove-AppxPackage
+        } else {
+            Write-Host "$blt not found. Skip..."
+        }
     }
     Pause
 }
@@ -288,7 +293,7 @@ function taskjob {
             Clear-Host
         }
         else {
-            Write-Warning -ForegroundColor Yellow "Taskjob not updated."
+            Write-Warning "Taskjob not updated."
             Pause
             Clear-Host
         }
