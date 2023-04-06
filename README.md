@@ -1,6 +1,11 @@
+
+# Readme need a update
+
+=======
 # Under Construction!!!
+# Needs alot of adjustments 
 #
-#
+
 # A Winget script to automatically install programs and MS Store apps. Debloating Windows Apps. Including automatic update and cleanup job
 #
 ## Features

@@ -4,25 +4,26 @@
 ### Here can you add apps that you want to configure during installation ###
 # just add the app id from winget
 $graphical = @(
-    @{name = "ClamWin.ClamWin" }
+    "ClamWin.ClamWin"
 );
 
 ### These apps are installed silently for all users ###
 # for msstore apps you need to specify the source like below
 
 $apps = @(
-    @{name = "7zip.7zip" }
-    @{name = "Foxit.FoxitReader" }
-    @{name = "Microsoft.VC++2015-2022Redist-x86" }
-    @{name = "Microsoft.VC++2015-2022Redist-x64" }
-    @{name = "9NCBCSZSJRSB"; source = "msstore" }        # Spotify
-    @{name = "9NKSQGP7F2NH"; source = "msstore" }        # Whatsapp Desktop
-    @{name = "9WZDNCRFJ3TJ"; source = "msstore" }        # Netflix
-    @{name = "9P6RC76MSMMJ"; source = "msstore" }        # Prime Video
-    @{name = "9PMMSR1CGPWG"; source = "msstore" }        # HEIF-PictureExtension
-    @{name = "9MVZQVXJBQ9V"; source = "msstore" }        # AV1 VideoExtension
-    @{name = "9NCTDW2W1BH8"; source = "msstore" }        # Raw-PictureExtension
-    @{name = "9N95Q1ZZPMH4"; source = "msstore" }        # MPEG-2-VideoExtension
+    "7zip.7zip"
+    "Foxit.FoxitReader"
+    "Microsoft.VCRedist.2015+.x64"
+    "Microsoft.VCRedist.2015+.x86"
+    "9NCBCSZSJRSB"                      # Spotify
+    "9NKSQGP7F2NH"                      # Whatsapp Desktop
+    "9WZDNCRFJ3TJ"                      # Netflix
+    "9P6RC76MSMMJ"                      # Prime Video
+    "9N7F2SM5D1LR"                      # Windows HDR Calibration
+    "9PMMSR1CGPWG"                      # HEIF-PictureExtension
+    "9MVZQVXJBQ9V"                      # AV1 VideoExtension
+    "9NCTDW2W1BH8"                      # Raw-PictureExtension
+    "9N95Q1ZZPMH4"                      # MPEG-2-VideoExtension
 );
 
 $bloatware = @(
@@ -30,6 +31,14 @@ $bloatware = @(
     "MicrosoftTeams"
     "Microsoft.Todos"
     "Microsoft.PowerAutomateDesktop"
+
+    # Win 11 22h2
+    "Clipchamp.Clipchamp"
+    "MicrosoftCorporataionII.MicrosoftFamily"
+    "BytedancePte.Ltd.TikTok"
+    "FACEBOOK.317180B0BB486"
+    "Facebook.Instagram*"
+    "22364Disney.ESPN*"
 
     # default Windows 10 apps
     "Microsoft.549981C3F5F10"        # Cortana Offline
@@ -41,6 +50,7 @@ $bloatware = @(
     "Microsoft.BingTranslator"
     "Microsoft.BingWeather"
     "Microsoft.FreshPaint"
+    #"Microsoft.GamingServices"
     "Microsoft.MicrosoftOfficeHub"
     "Microsoft.MicrosoftPowerBIForWindows"
     "Microsoft.MicrosoftSolitaireCollection"
@@ -49,25 +59,31 @@ $bloatware = @(
     "Microsoft.NetworkSpeedTest"
     "Microsoft.Office.OneNote"
     "Microsoft.People"
-    "Microsoft.Print3D"    
-    "Microsoft.WindowsAlarms"
-    # "microsoft.windowscommunicationsapps"        # Mail and Calender     
-    "Microsoft.WindowsMaps"
+    "Microsoft.Print3D"
     "Microsoft.SkypeApp"
     "Microsoft.Wallet"
+    #"Microsoft.Windows.Photos"
+    "Microsoft.WindowsAlarms"
+    #"Microsoft.WindowsCalculator"
+    #"Microsoft.WindowsCamera"
+    #"microsoft.windowscommunicationsapps"        # Mail and Calender     
+    "Microsoft.WindowsMaps"
+    "Microsoft.WindowsPhone"
     "Microsoft.WindowsSoundRecorder"
+    #"Microsoft.WindowsStore"       # can't be re-installed
     "Microsoft.ZuneVideo"
     "Microsoft.YourPhone"
-    # "Microsoft.MSPaint"          # Paint & Paint3D
-    # "Microsoft.ZuneMusic"        # New Media Player in Windows
+    #"Microsoft.MSPaint"          # Paint & Paint3D
+    #"Microsoft.ZuneMusic"        # New Media Player in Windows
 
     # Xbox Apps
-    # "Microsoft.Xbox.TCUI"
-    # "Microsoft.XboxApp"
-    # "Microsoft.XboxGameOverlay"
-    # "Microsoft.XboxGamingOverlay"
-    # "Microsoft.XboxIdentityProvider"
-    # "Microsoft.XboxSpeechToTextOverlay"
+    #"Microsoft.Xbox.TCUI"
+    #"Microsoft.XboxApp"
+    #"Microsoft.XboxGameOverlay"
+    #"Microsoft.XboxSpeechToTextOverlay"
+    #"Microsoft.XboxGamingOverlay"
+    #"Microsoft.XboxIdentityProvider"
+    #"Microsoft.XboxSpeechToTextOverlay"
 
     # Threshold 2 apps
     "Microsoft.GetHelp"
@@ -91,8 +107,8 @@ $bloatware = @(
     "Microsoft.Whiteboard"
 
     # non-Microsoft
-    # "4DF9E0F8.Netflix"
-    # "SpotifyAB.SpotifyMusic"
+    #"4DF9E0F8.Netflix"
+    #"SpotifyAB.SpotifyMusic"
     "2FE3CB00.PicsArt-PhotoStudio"
     "46928bounde.EclipseManager"
     "613EBCEA.PolarrPhotoEditorAcademicEdition"
@@ -138,14 +154,13 @@ $bloatware = @(
 #############################################################################################
 
 ### Install WinGet ###
-# Based on this gist: https://gist.github.com/crutkas/6c2096eae387e544bd05cde246f23901
+# Idea from this gist: https://gist.github.com/crutkas/6c2096eae387e544bd05cde246f23901
 $hasPackageManager = Get-AppxPackage -Name 'Microsoft.Winget.Source' | Select Name, Version
 $hasVCLibs = Get-AppxPackage -Name 'Microsoft.VCLibs.140.00.UWPDesktop' | Select Name, Version
 $hasXAML = Get-AppxPackage -Name 'Microsoft.UI.Xaml.2.7*' | Select Name, Version
 $hasAppInstaller = Get-AppxPackage -Name 'Microsoft.DesktopAppInstaller' | Select Name, Version
 $DesktopPath = [System.Environment]::GetFolderPath([System.Environment+SpecialFolder]::Desktop)
-$errorlog = "winget_error.log"
-
+$errorlog = "$DesktopPath\winget_error.log"
 
 function install_winget {
     Clear-Host
@@ -170,125 +185,95 @@ function install_winget {
             if ($hasAppInstaller.Version -lt "1.16.12653.0") {
                 Write-Host -ForegroundColor Yellow "Installing WinGet..."
     	        $releases_url = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-    		    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    		    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls13
     		    $releases = Invoke-RestMethod -Uri "$($releases_url)"
     		    $latestRelease = $releases.assets | Where-Object { $_.browser_download_url.EndsWith("msixbundle") } | Select-Object -First 1
     		    Add-AppxPackage -Path $latestRelease.browser_download_url
                 Write-Host -ForegroundColor Green "WinGet successfully installed."
             }
-        # Fix for hangup on first start
-        winget search clamav --accept-source-agreements
     }
     else {
         Write-Host -ForegroundColor Green "WinGet is already installed. Skip..."
-        # Fix for hangup on first start
-        winget search clamav --accept-source-agreements
+        Write-Host ""
         }
     Pause
-    Clear-Host
 }
 
 ### Install Apps with GUI ###
-# Based on this gist: https://gist.github.com/Codebytes/29bf18015f6e93fca9421df73c6e512c
+# Idea from this gist: https://gist.github.com/Codebytes/29bf18015f6e93fca9421df73c6e512c
 function install_gui {
+    Clear-Host
     Write-Host -ForegroundColor Cyan "Installing new Apps wit GUI"
     Foreach ($gui in $graphical) {
-        $listGUI = winget list --exact -q $gui.name
-        if (![String]::Join("", $listGUI).Contains($gui.name)) {
-            Write-Host -ForegroundColor Yellow "Install:" $gui.name
-            if ($gui.source -ne $null) {
-                winget install --exact --interactive --accept-package-agreements --accept-source-agreements $gui.name --source $gui.source
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host -ForegroundColor Green $gui.name "successfully installed."
-                }
-                else {
-                    $gui.name + " couldn't be installed." | Add-Content "$DesktopPath\$errorlog"
-                    Write-Host
-                    Write-Host -ForegroundColor Red $gui.name "couldn't be installed."
-                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\$errorlog"
-                    Write-Host
-                    Pause
-                }
+        $listGUI = winget list --exact --accept-source-agreements -q $gui
+        if (![String]::Join("", $listGUI).Contains($gui)) {
+            Write-Host -ForegroundColor Yellow "Install:" $gui
+            winget install --exact --interactive --accept-source-agreements --accept-package-agreements $gui
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host -ForegroundColor Green "$gui successfully installed."
             }
             else {
-                winget install --exact --interactive --accept-package-agreements --accept-source-agreements $gui.name
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host -ForegroundColor Green $gui.name "successfully installed."
-                }
-                else {
-                    $gui.name + " couldn't be installed." | Add-Content "$DesktopPath\$errorlog"
-                    Write-Host
-                    Write-Host -ForegroundColor Red $gui.name "couldn't be installed."
-                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\$errorlog"
-                    Write-Host
-                    Pause
-                }            
+                "$gui couldn't be installed." | Add-Content $errorlog
+                Write-Warning "$gui couldn't be installed."
+                Write-Host -ForegroundColor Yellow "Write in $errorlog"
+                Pause
             }
         }
         else {
-            Write-Host -ForegroundColor Yellow "Skip installation of" $gui.name
+            Write-Host -ForegroundColor Yellow "$gui already installed. Skip..."
         }
     }
     Pause
-    Clear-Host
 }
 
 ### Install Apps silent ###
 function install_silent {
+    Clear-Host
     Write-Host -ForegroundColor Cyan "Installing new Apps"
     Foreach ($app in $apps) {
-        $listApp = winget list --exact -q $app.name
-        if (![String]::Join("", $listApp).Contains($app.name)) {
-            Write-Host -ForegroundColor Yellow  "Install:" $app.name
+        $listApp = winget list --exact --accept-source-agreements -q $app
+        if (![String]::Join("", $listApp).Contains($app)) {
+            Write-Host -ForegroundColor Yellow  "Install:" $app
             # MS Store apps
-            if ($app.source -ne $null) {
-                winget install --exact --silent --accept-package-agreements --accept-source-agreements $app.name --source $app.source
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host -ForegroundColor Green $app.name "successfully installed."
-                }
-                else {
-                    $app.name + " couldn't be installed." | Add-Content "$DesktopPath\$errorlog"
-                    Write-Host
-                    Write-Host -ForegroundColor Red $app.name "couldn't be installed."
-                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\$errorlog"
-                    Write-Host
-                    Pause
-                }    
+            if ((winget search --exact -q $app) -match "msstore") {
+                winget install --exact --silent --accept-source-agreements --accept-package-agreements $app --source msstore
             }
             # All other Apps
             else {
-                winget install --exact --silent --scope machine --accept-package-agreements --accept-source-agreements $app.name
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host -ForegroundColor Green $app.name "successfully installed."
-                }
-                else {
-                    $app.name + " couldn't be installed." | Add-Content "$DesktopPath\$errorlog"
-                    Write-Host
-                    Write-Host -ForegroundColor Red $app.name "couldn't be installed."
-                    Write-Host -ForegroundColor Yellow "Write in $DesktopPath\$errorlog"
-                    Write-Host
-                    Pause
-                }  
+                winget install --exact --silent --scope machine --accept-source-agreements --accept-package-agreements $app
             }
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host -ForegroundColor Green "$app successfully installed."
+            }
+            else {
+                $app + " couldn't be installed." | Add-Content $errorlog
+                Write-Warning "$app couldn't be installed."
+                Write-Host -ForegroundColor Yellow "Write in $errorlog"
+                Pause
+            }  
         }
         else {
-            Write-Host -ForegroundColor Yellow "Skip installation of" $app.name
+            Write-Host -ForegroundColor Yellow "$app already installed. Skip..."
         }
     }
     Pause
-    Clear-Host
 }
 
 ### Debloating ###
 # Based on this gist: https://github.com/W4RH4WK/Debloat-Windows-10/blob/master/scripts/remove-default-apps.ps1
 function debloating {
-    Write-Host -ForegroundColor Cyan "Remove bloatware"
+    Clear-Host
+    Write-Host -ForegroundColor Cyan "Removing bloatware..."
     Foreach ($blt in $bloatware) {
-        Write-Host -ForegroundColor Red "Removing:" $blt
-        Get-AppxPackage -AllUsers $blt | Remove-AppxPackage
+        $package = Get-AppxPackage -AllUsers $blt
+        if ($package -ne $null) {
+            Write-Host -ForegroundColor Red "Removing: $blt"
+            $package | Remove-AppxPackage
+        } else {
+            Write-Host "$blt not found. Skip..."
+        }
     }
     Pause
-    Clear-Host
 }
 
 ### Register Taskjob ###
@@ -296,19 +281,32 @@ function taskjob {
     $taskname = 'WinGet AutoUpgrade & Cleanup'
     Write-Host -ForegroundColor Yellow "Checking for Taskjob..."
     if ($(Get-ScheduledTask -TaskName $taskname -ErrorAction SilentlyContinue).TaskName -eq $taskname) {
-        Unregister-ScheduledTask -TaskName $taskname -Confirm:$False
-        Write-Host -ForegroundColor Yellow "Taskjob already exists. Update to newer version..."
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        Invoke-WebRequest -Uri https://github.com/Kugane/winget/raw/main/WinGet%20AutoUpgrade%20%26%20Cleanup.xml -OutFile '$taskjob' 
-        Register-ScheduledTask -xml (Get-Content '$taskjob' | Out-String) -TaskName $taskname
-        Write-Host -ForegroundColor Green "Taskjob successfully updated."
+        Write-Host -ForegroundColor Yellow "Taskjob already exists. Do you want to update to newer version? (y/n)"
+        $update = Read-Host
+        if ($update -eq 'y' -or $update -eq 'Y') {
+            Unregister-ScheduledTask -TaskName $taskname -Confirm:$False -ErrorAction SilentlyContinue
+            Write-Host -ForegroundColor Yellow "Taskjob updating..."
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls13
+            Invoke-WebRequest -Uri https://github.com/Kugane/winget/raw/main/WinGet%20AutoUpgrade%20%26%20Cleanup.xml -OutFile '$taskjob' 
+            Register-ScheduledTask -xml (Get-Content '$taskjob' | Out-String) -TaskName $taskname
+            Write-Host -ForegroundColor Green "Taskjob successfully updated."
+            Pause
+            Clear-Host
+        }
+        else {
+            Write-Warning "Taskjob not updated."
+            Pause
+            Clear-Host
+        }
     }
     else {
         Write-Host -ForegroundColor Yellow "Installing taskjob..."
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls13
         Invoke-WebRequest -Uri https://github.com/Kugane/winget/raw/main/WinGet%20AutoUpgrade%20%26%20Cleanup.xml -OutFile '$taskjob' 
         Register-ScheduledTask -xml (Get-Content '$taskjob' | Out-String) -TaskName $taskname
         Write-Host -ForegroundColor Green "Taskjob successfully installed."
+        Pause
+        Clear-Host
     }
     Pause
     Clear-Host
@@ -316,12 +314,11 @@ function taskjob {
 
 ### Get List of installed Apps ###
 function get_list {
-    $timestamp = get-date -Format dd_MM_yyyy
-    $newPath = "$DesktopPath\" + "winget_"+ $env:computername + "_$timestamp" + ".txt"
+    Clear-Host
+    $newPath = ("$DesktopPath\applist_$env:COMPUTERNAME" + "_" + $(Get-Date -Format 'yyyy_MM_dd') + ".txt")
     Write-Host -ForegroundColor Yellow "Generating Applist..."
     winget list > $newPath
-    Write-Host -ForegroundColor Magenta "List saved on $newPath"
-    Pause
+    Write-Host -ForegroundColor Magenta "List saved in $newPath"
 }
 
 ### Finished ###
@@ -330,6 +327,14 @@ function finish {
     Write-Host -ForegroundColor Magenta  "Installation finished"
     Write-Host
     Pause
+}
+
+function check_rights {
+    If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+    {
+        Write-Warning "The script needs to be executed with administrator privileges."
+        Break
+    }
 }
 
 ### Question what to do ###
@@ -351,7 +356,7 @@ function menu {
     Write-Host
     Write-Host -ForegroundColor Magenta "0: Quit"
     Write-Host
-    
+ 
     $actions = "0"
     while ($actions -notin "0..7") {
     $actions = Read-Host -Prompt 'What you want to do?'
@@ -400,4 +405,5 @@ function menu {
         }
     }
 }
+check_rights
 menu
