@@ -1,5 +1,5 @@
 ﻿# Created by Kugane
-
+#
 
 ### Here can you add apps that you want to configure during installation ###
 # just add the app id from winget
