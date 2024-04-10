@@ -15,15 +15,15 @@ $apps = @(
     "Foxit.FoxitReader"
     "Microsoft.VCRedist.2015+.x64"
     "Microsoft.VCRedist.2015+.x86"
-    "9NCBCSZSJRSB"                      # Spotify
-    "9NKSQGP7F2NH"                      # Whatsapp Desktop
-    "9WZDNCRFJ3TJ"                      # Netflix
-    "9P6RC76MSMMJ"                      # Prime Video
-    "9N7F2SM5D1LR"                      # Windows HDR Calibration
-    "9PMMSR1CGPWG"                      # HEIF-PictureExtension
-    "9MVZQVXJBQ9V"                      # AV1 VideoExtension
-    "9NCTDW2W1BH8"                      # Raw-PictureExtension
-    "9N95Q1ZZPMH4"                      # MPEG-2-VideoExtension
+    "9NCBCSZSJRSB"          # Spotify
+    "9NKSQGP7F2NH"          # Whatsapp Desktop
+    "9WZDNCRFJ3TJ"          # Netflix
+    "9P6RC76MSMMJ"          # Prime Video
+    "9N7F2SM5D1LR"          # Windows HDR Calibration
+    "9PMMSR1CGPWG"          # HEIF-PictureExtension
+    "9MVZQVXJBQ9V"          # AV1 VideoExtension
+    "9NCTDW2W1BH8"          # Raw-PictureExtension
+    "9N95Q1ZZPMH4"          # MPEG-2-VideoExtension
 );
 
 $bloatware = @(
@@ -40,9 +40,14 @@ $bloatware = @(
     "Facebook.Instagram*"
     "22364Disney.ESPN*"
 
+    # Windows 11 23h2
+    "Microsoft.OutlookForWindows"
+    "Microsoft.Windows.DevHomeAzureExtension"           # DEV Home
+    "Microsoft.Windows.Ai.Copilot.Provider"         # Copilot
+
     # default Windows 10 apps
-    "Microsoft.549981C3F5F10"        # Cortana Offline
-    "Microsoft.OneDriveSync"         # Onedrive
+    "Microsoft.549981C3F5F10"           # Cortana Offline
+    "Microsoft.OneDriveSync"            # Onedrive
     "Microsoft.3DBuilder"
     "Microsoft.BingFinance"
     "Microsoft.BingNews"
@@ -66,15 +71,15 @@ $bloatware = @(
     "Microsoft.WindowsAlarms"
     #"Microsoft.WindowsCalculator"
     #"Microsoft.WindowsCamera"
-    #"microsoft.windowscommunicationsapps"        # Mail and Calender     
+    #"microsoft.windowscommunicationsapps"          # Mail and Calender     
     "Microsoft.WindowsMaps"
     "Microsoft.WindowsPhone"
     "Microsoft.WindowsSoundRecorder"
-    #"Microsoft.WindowsStore"       # can't be re-installed
+    #"Microsoft.WindowsStore"           # can't be re-installed
     "Microsoft.ZuneVideo"
     "Microsoft.YourPhone"
-    #"Microsoft.MSPaint"          # Paint & Paint3D
-    #"Microsoft.ZuneMusic"        # New Media Player in Windows
+    #"Microsoft.MSPaint"            # Paint & Paint3D
+    #"Microsoft.ZuneMusic"          # New Media Player in Windows
 
     # Xbox Apps
     #"Microsoft.Xbox.TCUI"
