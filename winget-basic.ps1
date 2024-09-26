@@ -424,13 +424,6 @@ function check_rights {
     }
 }
 
-Add-Type -AssemblyName System.Windows.Forms
-function set_console_background {
-    [console]::BackgroundColor = 'Black'
-    [console]::ForegroundColor = 'White'
-    Clear-Host
-}
-
 function toggle_dry_run {
     $global:dryRun = -not $global:dryRun
     menu
@@ -471,7 +464,6 @@ function menu {
         Write-Host
     }
     Clear-Host
-    set_console_background
     Show-Menu
 
     $actions = "0"
@@ -551,12 +543,10 @@ function menu {
             }
             default {
                 Clear-Host
-                set_console_background
                 Show-Menu
             }
         }
     }
 }
 check_rights
-set_console_background
 menu
