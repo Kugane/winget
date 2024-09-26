@@ -1,5 +1,5 @@
 ﻿# Created by Kugane
-$global:dryRun = $false
+$global:dryRun = $false # Don't change this line
 
 ### Here you can add apps that you want to configure during installation ###
 $graphical = @(
@@ -12,17 +12,17 @@ $apps = @(
     "Foxit.FoxitReader",
     "Microsoft.VCRedist.2015+.x64",
     "Microsoft.VCRedist.2015+.x86",
-    "9N0DX20HK701",
-    "9NCBCSZSJRSB",
-    "9NKSQGP7F2NH",
-    "9WZDNCRFJ3TJ",
-    "9P6RC76MSMMJ",
-    "9NXQXXLFST89",
-    "9N7F2SM5D1LR",
-    "9PMMSR1CGPWG",
-    "9MVZQVXJBQ9V",
-    "9NCTDW2W1BH8",
-    "9N95Q1ZZPMH4"
+    "9N0DX20HK701",     # Windows Terminal
+    "9NCBCSZSJRSB",     # Spotify Music
+    "9NKSQGP7F2NH",     # WhatsApp Desktop
+    "9WZDNCRFJ3TJ",     # Netflix
+    "9P6RC76MSMMJ",     # Prime Video for Windows
+    "9NXQXXLFST89",     # Disney+
+    "9N7F2SM5D1LR",     # Windows HDR Calibration
+    "9PMMSR1CGPWG",     # HEIF Image Extensions
+    "9MVZQVXJBQ9V",     # AV1 Video Extension
+    "9NCTDW2W1BH8",     # Raw Image Extension
+    "9N95Q1ZZPMH4"      # MPEG-2 Video Extension
 )
 
 $bloatware = @(
@@ -38,7 +38,7 @@ $bloatware = @(
     "Microsoft.BingTranslator",
     "Microsoft.BingTravel",
     "Microsoft.BingWeather",
-    "Microsoft.Getstarted",    # Cannot be uninstalled in Windows 11
+    "Microsoft.Getstarted",
     "Microsoft.Messaging",
     "Microsoft.Microsoft3DViewer",
     "Microsoft.MicrosoftJournal",
@@ -47,7 +47,6 @@ $bloatware = @(
     "Microsoft.MicrosoftSolitaireCollection",
     "Microsoft.MicrosoftStickyNotes",
     "Microsoft.MixedReality.Portal",
-    # "Microsoft.NetworkSpeedTest",     # Needed in Windows 11
     "Microsoft.News",
     "Microsoft.Office.OneNote",
     "Microsoft.Office.Sway",
@@ -125,6 +124,7 @@ $bloatware = @(
     # "Microsoft.Paint",                        # Classic Paint
     # "Microsoft.ScreenSketch",                 # Snipping Tool
     # "Microsoft.Whiteboard",                   # Only preinstalled on devices with touchscreen and/or pen support
+    # "Microsoft.NetworkSpeedTest",             # Needed in Windows 11
     # "Microsoft.Windows.Photos",
     # "Microsoft.WindowsCalculator",
     # "Microsoft.WindowsCamera",
@@ -347,6 +347,8 @@ function export_winget_list {
         winget export -o $exportPath
         if (Test-Path $exportPath) {
             Write-Host -ForegroundColor Green "Export completed successfully. File saved as $exportPath"
+            Pause
+            menu
         } else {
             throw "Export failed. File was not created."
         }
